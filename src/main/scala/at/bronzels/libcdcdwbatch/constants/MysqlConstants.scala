@@ -1,0 +1,36 @@
+package at.bronzels.libcdcdwbatch.constants
+
+object MysqlConstants {
+
+  val dataTypeVarchar = "varchar"
+  val dataTypeTinyint = "tinyint"
+  val dataTypeText = "text"
+  val dataTypeDate = "date"
+  val dataTypeSmallint = "smallint"
+  val dataTypeMediumint = "mediumint"
+  val dataTypeInt = "int"
+  val dataTypeBigint = "bigint"
+  val dataTypeFloat = "float"
+  val dataTypeDouble = "double"
+  val dataTypeDecimal = "decimal"
+  val dataTypeDatetime = "datetime"
+  val dataTypeTimestamp = "timestamp"
+  val dataTypeTime = "time"
+  val dataTypeYear = "year"
+  val dataTypeChar = "char"
+  val dataTypeTinyblob = "tinyblob"
+  val dataTypeTinytext = "tinytext"
+  val dataTypeBlob = "blob"
+  val dataTypeMediumblob = "mediumblob"
+  val dataTypeMediumtext = "mediumtext"
+  val dataTypeLongblob = "longblob"
+  val dataTypeLongtext = "longtext"
+  val dataTypeEnum = "enum"
+  val dataTypeSet = "set"
+  val dataTypeBool= "bool"
+  val dataTypeBoolean = "boolean"
+  val dataTypeBinary = "binary"
+  val dataTypeVarbinary = "varbinary"
+  val dataTypeBit = "bit"
+
+}
