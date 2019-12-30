@@ -12,6 +12,13 @@ object MysqlDataTypeConvertUdf {
       new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateTime).getTime
   })
 
+  def convertTimestamp2StringType: UserDefinedFunction =udf((timestamp: String) => {
+    if (timestamp == null || timestamp.isEmpty)
+      ""
+    else
+      new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp).toString
+  })
+
   def convertDate2LongType: UserDefinedFunction =udf((date: String) => {
     if (date == null || date.isEmpty)
       0L
@@ -38,8 +45,10 @@ object MysqlDataTypeConvertUdf {
   def convertBooleanType2IntegerType: UserDefinedFunction =udf((boolean: String) => {
     if (boolean == null || boolean.isEmpty || boolean.equals("false"))
       0
-    else
+    else if (boolean.equals("true"))
       1
+    else
+      Integer.valueOf(boolean).toInt
   })
 
   def convertCommonType2StringType: UserDefinedFunction =udf((str: String) => {

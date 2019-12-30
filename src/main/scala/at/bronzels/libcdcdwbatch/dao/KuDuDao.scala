@@ -10,9 +10,15 @@ import scala.collection.JavaConverters._
 
 object KuDuDao {
 
-  def saveFormatDF2Kudu(ss: SparkSession, kuduMasterUrl: String, afterFormatDF: DataFrame, outputTableName: String, tablePrimaryKeys: Array[String]): Unit = {
+  def readKuduTable(ss: SparkSession, kuduMasterUrl: String, kuduTableName: String) : DataFrame = {
+    ss.read.options(Map("kudu.master" -> kuduMasterUrl, "kudu.table" -> kuduTableName))
+      .format("kudu")
+      .load
+  }
+
+  def saveFormatDF2Kudu(ss: SparkSession, kuduMasterUrl: String, afterFormatDF: DataFrame, outputTableName: String, tablePrimaryKeys: Array[String], isSrcFieldNameWTUpperCase: Boolean=false, isOverride: Boolean=true): Unit = {
     val kuduContext:KuduContext = new KuduContext(kuduMasterUrl, ss.sparkContext)
-    createTable(kuduContext, outputTableName, afterFormatDF.schema, tablePrimaryKeys)
+    createTable(kuduContext, outputTableName, afterFormatDF.schema, tablePrimaryKeys, isSrcFieldNameWTUpperCase, isOverride)
     insertKuduTable(kuduContext, afterFormatDF, outputTableName)
   }
 
@@ -22,38 +28,35 @@ object KuDuDao {
     kuduContext.upsertRows(repartitionF, kuduTableName)
   }
 
-  def createTable(ss: SparkSession, kuduMasterUrl: String, tableName: String, tableSchema: StructType, tablePksArr: Array[String]): Unit = {
+  def createTable(ss: SparkSession, kuduMasterUrl: String, tableName: String, tableSchema: StructType, tablePksArr: Array[String], isSrcFieldNameWTUpperCase: Boolean): Unit = {
     val kuduContext:KuduContext = new KuduContext(kuduMasterUrl, ss.sparkContext)
-    createTable(kuduContext, tableName, tableSchema, tablePksArr)
+    createTable(kuduContext, tableName, tableSchema, tablePksArr, isSrcFieldNameWTUpperCase)
   }
 
-  def createTable(kuduContext: KuduContext, tableName: String, tableSchema: StructType, tablePksArr: Array[String], isOverride: Boolean = true): Unit = {
-    val formatSchema = formatSchema4PKColumnNotNull(tableSchema, tablePksArr)
-    val lowerCaseSchema = MySparkUtil.formatSchemaColumnLowercase(formatSchema)
+  def createTable(kuduContext: KuduContext, tableName: String, tableSchema: StructType, tablePksArr: Array[String], isSrcFieldNameWTUpperCase: Boolean, isOverride: Boolean = true): Unit = {
+    val pkFormatSchema = formatSchema4PKColumnNotNull(tableSchema, tablePksArr)
+
     if(kuduContext.tableExists(tableName) && isOverride)
       dropTable(kuduContext, tableName)
     if(!kuduContext.tableExists(tableName))
-      kuduContext.createTable(tableName, lowerCaseSchema, tablePksArr,
+      kuduContext.createTable(tableName, if (isSrcFieldNameWTUpperCase) MySparkUtil.formatSchemaColumnLowercase(pkFormatSchema) else pkFormatSchema, if (isSrcFieldNameWTUpperCase) tablePksArr.map(u=>u.toLowerCase) else tablePksArr,
         new CreateTableOptions()
           .setNumReplicas(3)
-          .addHashPartitions(tablePksArr.toSeq.map(_.toLowerCase).asJava, 15))
+          .addHashPartitions( if (isSrcFieldNameWTUpperCase) tablePksArr.toSeq.map(_.toLowerCase).asJava else tablePksArr.toSeq.asJava, 15))
   }
 
-  def formatDataFrame4PKColumnNotNull(inputDF: DataFrame, fields: Array[String], nullable: Boolean) : DataFrame = {
+  def formatDataFrame4PKColumnNotNull(inputDF: DataFrame, fields: Array[String], nullable: Boolean=false) : DataFrame = {
     val newSchema = formatSchema4PKColumnNotNull(inputDF.schema, fields)
     inputDF.sqlContext.createDataFrame(inputDF.rdd, newSchema )
   }
 
   def formatSchema4PKColumnNotNull(tableSchema: StructType, tablePksArr: Array[String]): StructType = {
-    val lowerTablePksArr = tablePksArr.map(u => u.toLowerCase)
     val newSchema = StructType(tableSchema.map {
-      case StructField(name, dataType, _, metadata) if lowerTablePksArr.contains(name.toLowerCase()) => StructField(name.toLowerCase, dataType, nullable = false, metadata)
+      case StructField(name, dataType, _, metadata) if tablePksArr.contains(name) => StructField(name, dataType, nullable = false, metadata)
       case y: StructField => y
     })
     newSchema
   }
-
-
   def convertFieldName2LowerCase(inputDF: DataFrame) : DataFrame = {
     val newSchema = StructType(inputDF.schema.map {
       case StructField(name, dataType, nullable, metadata) => StructField(name.toLowerCase, dataType, nullable, metadata)

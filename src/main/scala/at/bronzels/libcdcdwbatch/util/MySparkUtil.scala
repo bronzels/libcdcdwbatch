@@ -1,8 +1,7 @@
 package at.bronzels.libcdcdwbatch.util
 
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.functions.lit
-import org.apache.spark.sql.types.{DataType, StructField, StructType}
+import org.apache.spark.sql.types.{StructField, StructType}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 object MySparkUtil {
@@ -12,7 +11,7 @@ object MySparkUtil {
   }
 
   def formatSchemaColumnLowercase(tableSchema: StructType): StructType = {
-    StructType(tableSchema.map { u => StructField(u.name.toLowerCase, u.dataType, nullable = u.nullable, u.metadata)})
+    StructType(tableSchema.map { u => StructField( u.name.toLowerCase , u.dataType, nullable = u.nullable, u.metadata)})
   }
 
   def getSparkSession(args: Array[String]): SparkSession = {
