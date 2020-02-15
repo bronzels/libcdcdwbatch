@@ -72,7 +72,7 @@ object MysqlDao {
       case MysqlConstants.dataTypeBigint => structFieldWithConvertFunction(StructField(fieldName, LongType, nullable), null)
       case MysqlConstants.dataTypeFloat => structFieldWithConvertFunction(StructField(fieldName, DoubleType, nullable), null)
       case MysqlConstants.dataTypeDouble => structFieldWithConvertFunction(StructField(fieldName, DoubleType, nullable), null)
-      case MysqlConstants.dataTypeDecimal => structFieldWithConvertFunction(StructField(fieldName,  DecimalType(36, 18), nullable), null)
+      case MysqlConstants.dataTypeDecimal => structFieldWithConvertFunction(StructField(fieldName,  DoubleType, nullable), MysqlDataTypeConvertUdf.convertDecimalType2DoubleType)
       case MysqlConstants.dataTypeDatetime => structFieldWithConvertFunction(StructField(fieldName,  TimestampType, nullable), null)
       case MysqlConstants.dataTypeTimestamp => structFieldWithConvertFunction(StructField(fieldName,  TimestampType, nullable), null)
       case MysqlConstants.dataTypeTime => structFieldWithConvertFunction(StructField(fieldName,  LongType, nullable), MysqlDataTypeConvertUdf.convertDatetime2LongType)

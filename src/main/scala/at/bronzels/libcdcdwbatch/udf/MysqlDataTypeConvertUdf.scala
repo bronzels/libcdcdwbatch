@@ -12,6 +12,13 @@ object MysqlDataTypeConvertUdf {
       new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateTime).getTime
   })
 
+  def convertDecimalType2DoubleType: UserDefinedFunction =udf((bigDecimal: java.math.BigDecimal) => {
+    if (bigDecimal == null )
+      0.0
+    else
+      bigDecimal.doubleValue()
+  })
+
   def convertTimestamp2StringType: UserDefinedFunction =udf((timestamp: String) => {
     if (timestamp == null || timestamp.isEmpty)
       ""
