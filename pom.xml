@@ -10,12 +10,11 @@
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
-        <scala.version>2.11.4</scala.version>
-        <spark.artifact>2.11</spark.artifact>
-        <hbase.version>1.2.2</hbase.version>
-        <dependency.scope>compile</dependency.scope>
+        <scala.version>2.11.8</scala.version>
         <spark.version>2.4.0</spark.version>
-        <hadoop.version>2.6.0</hadoop.version>
+        <spark.artifact>2.11</spark.artifact>
+        <dependency.scope>compile</dependency.scope>
+        <hadoop.version>3.0.0</hadoop.version>
         <mongodb.version>3.6.4</mongodb.version>
     </properties>
 
@@ -32,6 +31,10 @@
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
             </snapshots>
+        </repository>
+        <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
         </repository>
     </repositories>
 
@@ -63,41 +66,37 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-hdfs</artifactId>
             <version>${hadoop.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${hadoop.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${spark.artifact}</artifactId>
             <version>${spark.version}</version>
-            <scope>${dependency.scope}</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_${spark.artifact}</artifactId>
             <version>${spark.version}</version>
-            <scope>${dependency.scope}</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-hive_${spark.artifact}</artifactId>
             <version>${spark.version}</version>
-            <scope>${dependency.scope}</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-mllib_${spark.artifact}</artifactId>
             <version>${spark.version}</version>
-            <scope>${dependency.scope}</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming-kafka-0-8_2.11</artifactId>
-            <version>${spark.version}</version>
-            <scope>${dependency.scope}</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -126,6 +125,12 @@
             <groupId>org.apache.kudu</groupId>
             <artifactId>kudu-spark2_2.11</artifactId>
             <version>1.10.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.spark</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
