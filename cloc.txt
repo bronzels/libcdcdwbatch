@@ -1,0 +1,16 @@
+cloc libcdcdwbatch --exclude-ext=json,iml,gitignore,txt --exclude-dir=.idea,target,logs
+      15 text files.
+      15 unique files.
+      20 files ignored.
+
+github.com/AlDanial/cloc v 1.74  T=0.04 s (275.3 files/s, 17759.3 lines/s)
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Scala                            8             75              4            425
+Maven                            1             13              0            186
+Java                             2             14              6             50
+Markdown                         1              0              0              1
+-------------------------------------------------------------------------------
+SUM:                            12            102             10            662
+-------------------------------------------------------------------------------
